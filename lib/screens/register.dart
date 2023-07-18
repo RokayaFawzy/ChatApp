@@ -1,20 +1,24 @@
-import 'package:chatapp/screens/register.dart';
-import 'package:chatapp/widgets/custom_buttom.dart';
-import 'package:chatapp/widgets/custom_text_field.dart';
+import 'package:chatapp/constant.dart';
+import 'package:chatapp/screens/login_page.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+import '../widgets/custom_buttom.dart';
+import '../widgets/custom_text_field.dart';
 
-  // This widget is the root of your application.
+class RegisterPage extends StatelessWidget {
+   RegisterPage({super.key});
+  String id = 'registerPage';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff2b475E),
+      backgroundColor: kPrimaryColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: ListView(
+        child: Column(
           children: [
+            Spacer(
+              flex: 2,
+            ),
             CircleAvatar(
               radius: 110,
               backgroundColor: Colors.black,
@@ -23,23 +27,21 @@ class LoginPage extends StatelessWidget {
                 backgroundImage: AssetImage('assets/images/123.jpg'),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Our Chat',
-                  style: TextStyle(
-                    fontSize: 32,
-                    color: Colors.white,
-                    fontFamily: 'pacifico',
-                  ),
-                ),
-              ],
+            Text(
+              'Our Chat',
+              style: TextStyle(
+                fontSize: 32,
+                color: Colors.white,
+                fontFamily: 'pacifico',
+              ),
+            ),
+            Spacer(
+              flex: 2,
             ),
             Row(
               children: [
                 Text(
-                  'LOGIN',
+                  'REGISTER',
                   style: TextStyle(
                     fontSize: 24,
                     color: Colors.white,
@@ -63,29 +65,32 @@ class LoginPage extends StatelessWidget {
               height: 10,
             ),
             CustomButon(
-              text: 'LOGIN',
+              text: 'REGISRER',
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'doesn\'t have an account ?',
+                  'already have an account? ',
                   style: TextStyle(
                     color: Colors.white,
                   ),
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, RegisterPage().id);
+                    Navigator.pop(context);
                   },
                   child: Text(
-                    '   REGISTER',
+                    'Login',
                     style: TextStyle(
                       color: Color(0xffC7EDE6),
                     ),
                   ),
                 )
               ],
+            ),
+            Spacer(
+              flex: 3,
             ),
           ],
         ),
