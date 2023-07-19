@@ -11,104 +11,128 @@ class RegisterPage extends StatelessWidget {
   String id = 'registerPage';
   String? email;
   String? password;
+  GlobalKey<FormState> fromKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kPrimaryColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: ListView(
-          children: [
-            CircleAvatar(
-              radius: 110,
-              backgroundColor: Colors.black,
-              child: CircleAvatar(
-                radius: 107,
-                backgroundImage: AssetImage('assets/images/123.jpg'),
+        child: Form(
+          key: fromKey,
+          child: ListView(
+            children: [
+              CircleAvatar(
+                radius: 110,
+                backgroundColor: Colors.black,
+                child: CircleAvatar(
+                  radius: 107,
+                  backgroundImage: AssetImage('assets/images/123.jpg'),
+                ),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Our Chat',
-                  style: TextStyle(
-                    fontSize: 32,
-                    color: Colors.white,
-                    fontFamily: 'pacifico',
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  'REGISTER',
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            CustomTextField(
-              onChange: (data) {
-                email = data;
-              },
-              hintText: 'Email',
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            CustomTextField(
-              onChange: (data) {
-                password = data;
-              },
-              hintText: 'Password',
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            CustomButon(
-              onTap: () async {
-               try{
-                 var auth = FirebaseAuth.instance;
-                UserCredential user = await auth.createUserWithEmailAndPassword(
-                    email: email!, password: password!);
-               }catch(ex){
-              //  ScaffoldMessenger.
-               }
-                             },
-              text: 'REGISRER',
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'already have an account? ',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Login',
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Our Chat',
                     style: TextStyle(
-                      color: Color(0xffC7EDE6),
+                      fontSize: 32,
+                      color: Colors.white,
+                      fontFamily: 'pacifico',
                     ),
                   ),
-                )
-              ],
-            ),
-          ],
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    'REGISTER',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              CustomTextField(
+                onChange: (data) {
+                  email = data;
+                },
+                hintText: 'Email',
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              CustomTextField(
+                onChange: (data) {
+                  password = data;
+                },
+                hintText: 'Password',
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              CustomButon(
+                onTap: () async {
+                  if (fromKey.currentState!.validate()) {
+                    try {
+                      await registerUser();
+                    } on FirebaseAuthException catch (ex) {
+                      if (ex.code == 'weak-password') {
+                        showSnackBar(context, 'weak password');
+                      } else if (ex.code == 'email-already-in-use') {
+                        showSnackBar(context, 'email already in use');
+                      }
+                    } catch (ex) {}
+                    showSnackBar(context, 'there was an error');
+                  }else{
+                    
+                  }
+                },
+                text: 'REGISRER',
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'already have an account? ',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'Login',
+                      style: TextStyle(
+                        color: Color(0xffC7EDE6),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('weak password'),
+      ),
+    );
+  }
+
+  Future<void> registerUser() async {
+    UserCredential user = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email!, password: password!);
   }
 }
