@@ -1,24 +1,24 @@
 import 'package:chatapp/constant.dart';
 import 'package:chatapp/screens/login_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/custom_buttom.dart';
 import '../widgets/custom_text_field.dart';
 
 class RegisterPage extends StatelessWidget {
-   RegisterPage({super.key});
+  RegisterPage({super.key});
   String id = 'registerPage';
+  String? email;
+  String? password;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kPrimaryColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
+        child: ListView(
           children: [
-            Spacer(
-              flex: 2,
-            ),
             CircleAvatar(
               radius: 110,
               backgroundColor: Colors.black,
@@ -27,16 +27,18 @@ class RegisterPage extends StatelessWidget {
                 backgroundImage: AssetImage('assets/images/123.jpg'),
               ),
             ),
-            Text(
-              'Our Chat',
-              style: TextStyle(
-                fontSize: 32,
-                color: Colors.white,
-                fontFamily: 'pacifico',
-              ),
-            ),
-            Spacer(
-              flex: 2,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Our Chat',
+                  style: TextStyle(
+                    fontSize: 32,
+                    color: Colors.white,
+                    fontFamily: 'pacifico',
+                  ),
+                ),
+              ],
             ),
             Row(
               children: [
@@ -53,18 +55,33 @@ class RegisterPage extends StatelessWidget {
               height: 10,
             ),
             CustomTextField(
+              onChange: (data) {
+                email = data;
+              },
               hintText: 'Email',
             ),
             const SizedBox(
               height: 20,
             ),
             CustomTextField(
+              onChange: (data) {
+                password = data;
+              },
               hintText: 'Password',
             ),
             const SizedBox(
               height: 10,
             ),
             CustomButon(
+              onTap: () async {
+               try{
+                 var auth = FirebaseAuth.instance;
+                UserCredential user = await auth.createUserWithEmailAndPassword(
+                    email: email!, password: password!);
+               }catch(ex){
+              //  ScaffoldMessenger.
+               }
+                             },
               text: 'REGISRER',
             ),
             Row(
@@ -88,9 +105,6 @@ class RegisterPage extends StatelessWidget {
                   ),
                 )
               ],
-            ),
-            Spacer(
-              flex: 3,
             ),
           ],
         ),
