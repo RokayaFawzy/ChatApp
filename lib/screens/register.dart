@@ -1,132 +1,157 @@
 import 'package:chatapp/constant.dart';
+import 'package:chatapp/screens/chat_page.dart';
 import 'package:chatapp/screens/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
+import '../helper/show_Snack_Bar.dart';
 import '../widgets/custom_buttom.dart';
 import '../widgets/custom_text_field.dart';
 
-class RegisterPage extends StatelessWidget {
-  RegisterPage({super.key});
-  String id = 'registerPage';
+class RegisterPage extends StatefulWidget {
+  RegisterPage({Key? key}) : super(key: key);
+
+  static String id = 'RegisterPage';
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   String? email;
+
   String? password;
-  GlobalKey<FormState> fromKey = GlobalKey();
+
+  bool isLoading = false;
+
+  GlobalKey<FormState> formKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: kPrimaryColor,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Form(
-          key: fromKey,
-          child: ListView(
-            children: [
-              CircleAvatar(
-                radius: 110,
-                backgroundColor: Colors.black,
-                child: CircleAvatar(
-                  radius: 107,
-                  backgroundImage: AssetImage('assets/images/123.jpg'),
+    return ModalProgressHUD(
+      inAsyncCall: isLoading,
+      child: Scaffold(
+        backgroundColor: kPrimaryColor,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Form(
+            key: formKey,
+            child: ListView(
+              children: [
+                SizedBox(
+                  height: 75,
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Our Chat',
-                    style: TextStyle(
-                      fontSize: 32,
-                      color: Colors.white,
-                      fontFamily: 'pacifico',
-                    ),
+                CircleAvatar(
+                  radius: 110,
+                  backgroundColor: Colors.black,
+                  child: CircleAvatar(
+                    radius: 107,
+                    backgroundImage: AssetImage('assets/images/123.jpg'),
                   ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(
-                    'REGISTER',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              CustomTextField(
-                onChange: (data) {
-                  email = data;
-                },
-                hintText: 'Email',
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              CustomTextField(
-                onChange: (data) {
-                  password = data;
-                },
-                hintText: 'Password',
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              CustomButon(
-                onTap: () async {
-                  if (fromKey.currentState!.validate()) {
-                    try {
-                      await registerUser();
-                    } on FirebaseAuthException catch (ex) {
-                      if (ex.code == 'weak-password') {
-                        showSnackBar(context, 'weak password');
-                      } else if (ex.code == 'email-already-in-use') {
-                        showSnackBar(context, 'email already in use');
-                      }
-                    } catch (ex) {}
-                    showSnackBar(context, 'there was an error');
-                  }else{
-                    
-                  }
-                },
-                text: 'REGISRER',
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'already have an account? ',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'Login',
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Scholar Chat',
                       style: TextStyle(
-                        color: Color(0xffC7EDE6),
+                        fontSize: 32,
+                        color: Colors.white,
+                        fontFamily: 'pacifico',
                       ),
                     ),
-                  )
-                ],
-              ),
-            ],
+                  ],
+                ),
+                SizedBox(
+                  height: 75,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'REGISTER',
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                CustomFormTextField(
+                  onChange: (data) {
+                    email = data;
+                  },
+                  hintText: 'Email',
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                CustomFormTextField(
+                  onChange: (data) {
+                    password = data;
+                  },
+                  hintText: 'Password',
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                CustomButon(
+                  onTap: () async {
+                    if (formKey.currentState!.validate()) {
+                      isLoading = true;
+                      setState(() {});
+                      try {
+                        await registerUser();
+
+                        Navigator.pushNamed(context, ChatPage.id);
+                      } on FirebaseAuthException catch (ex) {
+                        if (ex.code == 'weak-password') {
+                          showSnackBar(context, 'weak password');
+                        } else if (ex.code == 'email-already-in-use') {
+                          showSnackBar(context, 'email already exists');
+                        }
+                      } catch (ex) {
+                        showSnackBar(context, 'there was an error');
+                      }
+
+                      isLoading = false;
+                      setState(() {});
+                    } else {}
+                  },
+                  text: 'REGISTER',
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'already have an account?',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        '  Login',
+                        style: TextStyle(
+                          color: Color(0xffC7EDE6),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
-
-  void showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('weak password'),
       ),
     );
   }
